@@ -1,0 +1,291 @@
+/*! HTML5 Boilerplate v5.0 | MIT License | http://h5bp.com/ */
+
+html {
+	color: #4d4d4d;
+	font-size: 1em;
+	line-height: 1.4;
+}
+
+hr {
+	display: block;
+	height: 1px;
+	border: 0;
+	border-top: 1px solid #ccc;
+	margin: 1em 0;
+	padding: 0;
+}
+
+a {
+	color: #8bc63f;
+	text-decoration: underline;
+}
+
+a:hover {
+	color: #70a025;
+	text-decoration: none;
+}
+
+audio,
+canvas,
+iframe,
+img,
+svg,
+video {
+	vertical-align: middle;
+}
+
+fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+textarea {
+	resize: vertical;
+}
+
+/* ===== Initializr Styles ==================================================
+   Author: Jonathan Verrecchia - verekia.com/initializr/responsive-template
+   ========================================================================== */
+
+body {
+	font: 16px/26px 'Montserrat', sans-serif;
+	background: white;
+}
+
+.wrapper {
+	width: 90%;
+	margin: 0 5%;
+}
+
+/* ==============
+	MOBILE: Main
+   ============== */
+
+.main article {
+	border-bottom: 1px solid #ccc;
+	padding: 30px 0;
+	margin: 0;
+}
+
+.main article:last-child {
+	border-bottom: none;
+}
+
+.main article h1 {
+	font-size: 2em;
+}
+
+.footer-container footer {
+	color: white;
+	padding: 20px 0;
+}
+
+.button {
+	background: #8bc63f;
+	border: 1px solid #8bc63f;
+	color: white;
+	font-size: 16px;
+	padding: 8px 20px;
+	text-decoration: none;
+	transition: all 0.1s ease;
+	display: inline-block;
+}
+
+.button:hover {
+	border: 1px solid #70a025;
+	background: #70a025;
+}
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+.header-container,
+.footer-container {
+	background: #4d4d4d;
+	color: white;
+	padding-bottom: 2em;
+}
+
+.header-container .button:hover,
+.footer-container .button:hover {
+	border: 1px solid white;
+	background: transparent;
+}
+
+.header-container a,
+.footer-container a {
+	color: white;
+	text-decoration: none;
+}
+
+.header-container a:hover,
+.footer-container a:hover {
+	color: white;
+	text-decoration: underline;
+}
+
+.logo {
+	height: 100px;
+	width: 290px;
+}
+
+.title {
+	margin-top: 2em;
+	font-size: 2.5em;
+	line-height: 1em;
+}
+
+.cta {
+	margin-top: 2em;
+}
+
+.cta .button {
+	margin-right: 0.5em;
+}
+
+.slack-theme {
+	font-size: 0.9em;
+}
+
+.code-of-conduct {
+	border: 1px solid #ccc;
+	padding: 0 20px;
+	height: 300px;
+	overflow: scroll;
+	background: #666;
+}
+
+
+
+
+
+
+/* ==========================================================================
+   Media Queries
+   ========================================================================== */
+
+@media only screen and (min-width: 1140px) {
+
+/* ===============
+	Maximal Width
+   =============== */
+
+	.wrapper {
+		width: 1026px; /* 1140px - 10% for margins */
+		margin: 0 auto;
+	}
+}
+
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+
+.hidden {
+	display: none !important;
+	visibility: hidden;
+}
+
+.visuallyhidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+}
+
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+	clip: auto;
+	height: auto;
+	margin: 0;
+	overflow: visible;
+	position: static;
+	width: auto;
+}
+
+.invisible {
+	visibility: hidden;
+}
+
+.clearfix:before,
+.clearfix:after {
+	content: " ";
+	display: table;
+}
+
+.clearfix:after {
+	clear: both;
+}
+
+.clearfix {
+	*zoom: 1;
+}
+
+/* ==========================================================================
+   Print styles
+   ========================================================================== */
+
+@media print {
+	*,
+	*:before,
+	*:after {
+		background: transparent !important;
+		color: #000 !important;
+		box-shadow: none !important;
+		text-shadow: none !important;
+	}
+
+	a,
+	a:visited {
+		text-decoration: underline;
+	}
+
+	a[href]:after {
+		content: " (" attr(href) ")";
+	}
+
+	abbr[title]:after {
+		content: " (" attr(title) ")";
+	}
+
+	a[href^="#"]:after,
+	a[href^="javascript:"]:after {
+		content: "";
+	}
+
+	pre,
+	blockquote {
+		border: 1px solid #999;
+		page-break-inside: avoid;
+	}
+
+	thead {
+		display: table-header-group;
+	}
+
+	tr,
+	img {
+		page-break-inside: avoid;
+	}
+
+	img {
+		max-width: 100% !important;
+	}
+
+	p,
+	h2,
+	h3 {
+		orphans: 3;
+		widows: 3;
+	}
+
+	h2,
+	h3 {
+		page-break-after: avoid;
+	}
+}
