@@ -95,6 +95,8 @@ body {
 .button:hover {
 	border: 1px solid #70a025;
 	background: #70a025;
+	color: white;
+	text-decoration: none;
 }
 
 /* ==========================================================================
@@ -112,6 +114,7 @@ body {
 .footer-container .button:hover {
 	border: 1px solid white;
 	background: transparent;
+	text-decoration: none;
 }
 
 .header-container a,
