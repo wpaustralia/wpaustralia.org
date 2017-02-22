@@ -56,6 +56,7 @@ body {
 .wrapper {
 	width: 90%;
 	margin: 0 5%;
+	position: relative;
 }
 
 /* ==============
@@ -93,9 +94,9 @@ body {
 }
 
 .button:hover {
-	border: 1px solid #70a025;
-	background: #70a025;
-	color: white;
+	border: 1px solid #454545;
+	background: transparent;
+	color: #454545;
 	text-decoration: none;
 }
 
@@ -108,12 +109,12 @@ body {
 	background: #4d4d4d;
 	color: white;
 	padding-bottom: 2em;
+	overflow: hidden;
 }
 
 .header-container .button:hover,
 .footer-container .button:hover {
 	border: 1px solid white;
-	background: transparent;
 	text-decoration: none;
 }
 
@@ -129,6 +130,18 @@ body {
 	text-decoration: underline;
 }
 
+.wapuu {
+	display: none;
+}
+
+.header-container h1,
+.header-container h2,
+.header-container p,
+.header-container .logo {
+	z-index: 20;
+	position: relative;
+}
+
 .logo {
 	height: 100px;
 	width: 290px;
@@ -136,7 +149,7 @@ body {
 
 .title {
 	margin-top: 2em;
-	font-size: 2.5em;
+	font-size: 2em;
 	line-height: 1em;
 }
 
@@ -160,14 +173,112 @@ body {
 	background: #666;
 }
 
+#meetups .meetups {
+	display: flex;
+	flex-wrap: wrap;
+}
 
+#meetups .meetups h2 {
+	flex: 0 98%;
+	margin-left: 1%;
+	margin-right: 1%;
+}
 
+#meetups .meetup {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	flex: 0 48%;
+	margin: 0 1% 1.3em;
+	box-shadow: inset 0 0 1px 1px #ccc;
+	transition: all 0.1s ease;
+	background: white;
+}
 
+#meetups .meetup h3 {
+	margin: 0;
+}
+
+#meetups .meetup h3 a {
+	padding: 30px;
+	text-align: center;
+	margin: 0;
+	display: block;
+	text-decoration: none;
+	color: #4d4d4d;
+}
+
+#meetups .meetup:hover {
+	background: #4d4d4d;
+	box-shadow: inset 0 0 40px 0 rgba(0,0,0,0.1);
+}
+
+#meetups .meetup:hover a {
+	color: white;
+}
+
+#meetups .meetup.brisbane:hover {
+	background: #FF931E;
+}
+
+#meetups .meetup.sunshine-coast:hover {
+	background: #F8CF65;
+}
+
+#meetups .meetup.gold-coast:hover {
+	background: #00ADEF;
+}
+
+#meetups .meetup.sydney:hover {
+	background: #2DB296;
+}
+
+#meetups .meetup.port-macquarie:hover {
+	background: #ED9257;
+}
+
+#meetups .meetup.geelong:hover {
+	background: #0E2542;
+}
+
+#meetups .meetup.melbourne:hover {
+	background: #117EC3;
+}
+
+#meetups .meetup.adelaide:hover {
+	background: #BC3330;
+}
+
+#meetups .meetup.perth:hover {
+	background: #D01737;
+}
 
 
 /* ==========================================================================
    Media Queries
    ========================================================================== */
+
+@media only screen and (min-width: 480px) {
+
+/* ===============
+	Mobile Width
+   =============== */
+
+	.title {
+		font-size: 2.5em;
+	}
+
+	.wapuu {
+		position: absolute;
+		right: 0;
+		bottom: -110px;
+		width: 200px;
+		z-index: 10;
+		transform: rotate(10deg);
+		transition: all 0.1s ease;
+		display: block;
+	}
+}
 
 @media only screen and (min-width: 1140px) {
 
@@ -178,6 +289,11 @@ body {
 	.wrapper {
 		width: 1026px; /* 1140px - 10% for margins */
 		margin: 0 auto;
+	}
+
+	.wapuu {
+		bottom: -120px;
+		width: 250px;
 	}
 }
 
