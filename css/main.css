@@ -158,7 +158,7 @@ body {
 }
 
 .cta .button {
-	margin-right: 0.5em;
+	margin: 0 0 0.5em 0.5em;
 }
 
 .slack-theme {
@@ -193,14 +193,17 @@ body {
 	box-shadow: inset 0 0 1px 1px #ccc;
 	transition: all 0.1s ease;
 	background: white;
+	max-width: 48%;
+	word-wrap: break-word;
 }
 
 #meetups .meetup h3 {
 	margin: 0;
+	font-size: 1em;
 }
 
 #meetups .meetup h3 a {
-	padding: 30px;
+	padding: 15px;
 	text-align: center;
 	margin: 0;
 	display: block;
@@ -277,6 +280,14 @@ body {
 		transform: rotate(10deg);
 		transition: all 0.1s ease;
 		display: block;
+	}
+
+	#meetups .meetup h3 {
+		font-size: 1.17em;
+	}
+
+	#meetups .meetup h3 a {
+		padding: 30px;
 	}
 }
 
