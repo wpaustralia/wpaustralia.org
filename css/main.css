@@ -199,11 +199,11 @@ body {
 
 #meetups .meetup h3 {
 	margin: 0;
-	font-size: 1.17em;
+	font-size: 1em;
 }
 
 #meetups .meetup h3 a {
-	padding: 30px;
+	padding: 15px;
 	text-align: center;
 	margin: 0;
 	display: block;
@@ -281,12 +281,13 @@ body {
 		transition: all 0.1s ease;
 		display: block;
 	}
+
 	#meetups .meetup h3 {
-		font-size: 1em;
+		font-size: 1.17em;
 	}
 
 	#meetups .meetup h3 a {
-		padding: 15px;
+		padding: 30px;
 	}
 }
 
