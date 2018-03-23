@@ -1,6 +1,6 @@
 # wpaustralia.org
 
-The WP Australia site http://wpaustralia.org/
+The WP Australia site [http://wpaustralia.org/]([http://wpaustralia.org/).
 
 ### Installation
 
