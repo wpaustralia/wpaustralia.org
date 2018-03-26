@@ -25,7 +25,7 @@ We have bundled a few Chassis Extensions to assist with development. We've inclu
 
 ## Useful commands
 
-* `vagrant up` - Run this in the directory you installed this project in to boot up your development environment. e.g. `cd /Volumes/Sites/wpaustralia; vagrant up` then browse to [http://wpaustralia.local](http://wpaustralia.local)
+* `vagrant up` - Run this from the `wpaustralia` directory you downloaded and installed this project. e.g. `cd /Volumes/Sites/wpaustralia; vagrant up` then browse to [http://wpaustralia.local](http://wpaustralia.local)
 * `vagrant halt` - Run this when you have finished development to shutdown the Vagrant Virtual Machine. e.g. `cd /Volumes/Sites/wpaustralia; vagrant halt`
 * `vagrant destroy` - Run this if you wish to destory the Vagrant Virtual Machine.
 * `vagrant provison` - Run this if you have added an additional Chassis extension or if you are [disabling](http://docs.chassis.io/en/latest/config/#extensions) one of the Chassis extensions.
