@@ -8,7 +8,7 @@ We've created a script that automatically sets up a local development server usi
 
 You can get up and running by doing the following:
 1. Open Terminal.
-2. Change directories into the a folder where you would like to download the project. e.g. `cd /Volumes/Sites`
+2. Change directories into the folder where you would like to download the project. e.g. `cd /Volumes/Sites`
 3. Run the following command: `curl -L https://git.io/vxWPG | sh`
 4. Wait patiently while the script downloads and sets up the appropriate software.
 5. If all goes well a browser should open [http://wpaustralia.local](http://wpaustralia.local)
