@@ -18,7 +18,7 @@ You can get up and running by doing the following:
 
 We have bundled a few Chassis Extensions to assist with development. We've included the following extensions:
 * [Xdebug](https://github.com/Chassis/Xdebug) - This extensions automatically sets up the Xdebug php module for you.
-* [Mailhog](https://github.com/Chassis/mailhog) - This extension setup Mailhog which catches all the email WordPress sends. You can see the dashboard for it by visiting. [http://wpaustralia.org:8025/]
+* [Mailhog](https://github.com/Chassis/mailhog) - This extension setup Mailhog which catches all the email WordPress sends. You can see the dashboard for it by visiting. [http://wpaustralia.local:8025/]
  * [Sequel Pro](https://github.com/Chassis/sequelpro) - This extensions allows you to run `vagrant sequel` from the command line and it will generate a `.spf` file and open the mySQL database in [Sequel Pro](https://www.sequelpro.com/).
 * [Database Backup](https://github.com/Chassis/db-backup/) - This extension will prompt you to backup your database if you run `vagrant destroy` from the command line.
 * [Fish](https://github.com/Chassis/Fish/) - This extension replaces Bash shell with [Fish](https://fishshell.com/) shell.
