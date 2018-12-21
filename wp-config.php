@@ -6,7 +6,7 @@
 define('WP_AUTO_UPDATE_CORE', false);
 
 // Include the Database Credentials, Salts and keys, etc
-require __DIR__ . '/wp-config-private.php';
+@include( __DIR__ . '/wp-config-private.php' );
 if ( ! defined( 'DB_PASSWORD' ) ) {
 	die( "Please create a `wp-config-private.php` file with all the regular secrets WordPress needs." );
 }
