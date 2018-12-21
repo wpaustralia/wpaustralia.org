@@ -1,9 +1,6 @@
 <?php
 /**
  * The template used for displaying page content in page.php
- *
- * @package MaddisonDesigns
- * @since MaddisonDesigns 1.0
  */
 ?>
 
@@ -16,7 +13,7 @@
 	<div class="entry-content">
 		<?php the_content(); ?>
 
-		<h2><?php esc_html_e( 'Archives by Category', 'maddisondesigns' ); ?></h2>
+		<h2><?php _e( 'Archives by Category', 'wpaus' ); ?></h2>
 		<ul class="content-archives-by-category">
 			<?php wp_list_categories( array(
 				'showcount' => 'true',
@@ -25,11 +22,11 @@
 			) ); ?>
 		</ul>
 
-		<h2><?php esc_html_e( 'Archives by Month', 'maddisondesigns' ); ?></h2>
+		<h2><?php _e( 'Archives by Month', 'wpaus' ); ?></h2>
 		<ul class="content-archives-by-month">
 			<?php wp_get_archives( 'type=monthly' ); ?>
 		</ul>
 
-		<?php wp_link_pages( array( 'before' => '<div class="page-links">' . esc_html__( 'Pages:', 'maddisondesigns' ), 'after' => '</div>' ) ); ?>
+		<?php wp_link_pages( array( 'before' => '<div class="page-links">' . __( 'Pages:', 'wpaus' ), 'after' => '</div>' ) ); ?>
 	</div><!-- /.entry-content -->
 </article><!-- /#post -->

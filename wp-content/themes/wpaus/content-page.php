@@ -1,9 +1,6 @@
 <?php
 /**
  * The template used for displaying page content in page.php
- *
- * @package MaddisonDesigns
- * @since MaddisonDesigns 1.0
  */
 ?>
 
@@ -19,7 +16,7 @@
 	<div class="entry-content">
 		<?php the_content(); ?>
 		<?php wp_link_pages( array(
-			'before' => '<div class="page-links">' . esc_html__( 'Pages:', 'maddisondesigns' ),
+			'before' => '<div class="page-links">' . __( 'Pages:', 'wpaus' ),
 			'after' => '</div>',
 			'link_before' => '<span class="page-numbers">',
 			'link_after' => '</span>'

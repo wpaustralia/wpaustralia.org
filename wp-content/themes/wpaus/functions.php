@@ -1,6 +1,6 @@
 <?php
 /**
- * MaddisonDesigns functions and definitions
+ * WP Australia functions and definitions
  */
 
 /**
@@ -9,27 +9,28 @@
 if ( ! isset( $content_width ) )
 	$content_width = 900; /* Default the embedded content width to 900px */
 
-
 /**
  * Sets up theme defaults and registers support for various WordPress features.
  *
  * Note that this function is hooked into the after_setup_theme hook, which runs
  * before the init hook. The init hook is too late for some features, such as indicating
  * support post thumbnails.
- *
- * @return void
  */
-if ( ! function_exists( 'maddisondesigns_setup' ) ) {
-	function maddisondesigns_setup() {
+if ( ! function_exists( 'wpaus_setup' ) ) {
+	function wpaus_setup() {
 		global $content_width;
 
-		/**
-		 * Make theme available for translation
-		 * Translations can be filed in the /languages/ directory
-		 * If you're building a theme based on MaddisonDesigns, use a find and replace
-		 * to change 'maddisondesigns' to the name of your theme in all the template files
-		 */
-		load_theme_textdomain( 'maddisondesigns', trailingslashit( get_template_directory() ) . 'languages' );
+		// Enable support for Theme Options.
+		// Rather than reinvent the wheel, we're using the Options Framework by Devin Price, so huge props to him!
+		// http://wptheming.com/options-framework-theme/
+		if ( ! function_exists( 'optionsframework_init' ) ) {
+			define( 'OPTIONS_FRAMEWORK_DIRECTORY', trailingslashit( get_template_directory_uri() ) . 'inc/' );
+			require_once trailingslashit( dirname( __FILE__ ) ) . 'inc/options-framework.php';
+
+			// Loads options.php from child or parent theme
+			$optionsfile = locate_template( 'options.php' );
+			load_template( $optionsfile );
+		}
 
 		// This theme styles the visual editor with editor-style.css to match the theme style.
 		add_editor_style();
@@ -45,37 +46,60 @@ if ( ! function_exists( 'maddisondesigns_setup' ) ) {
 
 		// This theme uses wp_nav_menu() in one location
 		register_nav_menus( array(
-				'primary' => esc_html__( 'Primary Menu', 'maddisondesigns' )
-			) );
-
-		// This theme supports a variety of post formats
-		add_theme_support( 'post-formats', array( 'aside', 'audio', 'chat', 'gallery', 'image', 'link', 'quote', 'status', 'video' ) );
+			'primary' => __( 'Primary Menu', 'wpaus' )
+		) );
 
 		// Enable support for Custom Backgrounds
 		add_theme_support( 'custom-background', array(
-				// Background color default
-				'default-color' => 'fff',
-				// Background image default
-				'default-image' => trailingslashit( get_template_directory_uri() ) . 'images/faint-squares.jpg'
-			) );
+			// Background color default
+			'default-color' => 'fff',
+			// Background image default
+			'default-image' => trailingslashit( get_template_directory_uri() ) . 'images/faint-squares.jpg'
+		) );
 
 		// Enable support for Custom Headers (or in our case, a custom logo)
 		add_theme_support( 'custom-header', array(
-				// Header image default
-				'default-image' => trailingslashit( get_template_directory_uri() ) . 'images/logo.png',
-				// Header text display default
-				'header-text' => false,
-				// Header text color default
-				'default-text-color' => '000',
-				// Flexible width
-				'flex-width' => true,
-				// Header image width (in pixels)
-				'width' => 300,
-				// Flexible height
-				'flex-height' => true,
-				// Header image height (in pixels)
-				'height' => 80
-			) );
+			// Header image default
+			'default-image' => trailingslashit( get_template_directory_uri() ) . 'logo.php',
+			// Header text display default
+			'header-text' => false,
+			// Header text color default
+			'default-text-color' => '000',
+			// Flexible width
+			'flex-width' => true,
+			// Header image width (in pixels)
+			'width' => 300,
+			// Flexible height
+			'flex-height' => true,
+			// Header image height (in pixels)
+			'height' => 80
+		) );
+
+		// Gutenberg colour schemes..
+		add_theme_support(
+			'editor-color-palette', array(
+				array(
+					'name'  => 'Theme Colour',
+					'slug' => 'theme-light',
+					'color' => of_get_option( 'logo_color_bright', '#8cc63f' ),
+				),
+				array(
+					'name'  => 'Theme Dark Colour',
+					'slug' => 'theme-dark',
+					'color' => of_get_option( 'logo_color_dark', '#70a025' ),
+				),
+				array(
+					'name'  => 'White',
+					'slug' => 'white',
+					'color' => '#fff',
+				),
+				array(
+					'name'  => 'Black',
+					'slug' => 'black',
+					'color' => '#111',
+				)
+			)
+		);
 
 		/*
 		 * Let WordPress manage the document title.
@@ -85,41 +109,10 @@ if ( ! function_exists( 'maddisondesigns_setup' ) ) {
 		 */
 		add_theme_support( 'title-tag' );
 
-		// Enable support for WooCommerce
-		add_theme_support( 'woocommerce' );
-
-		// Enable support for Theme Options.
-		// Rather than reinvent the wheel, we're using the Options Framework by Devin Price, so huge props to him!
-		// http://wptheming.com/options-framework-theme/
-		if ( !function_exists( 'optionsframework_init' ) ) {
-			define( 'OPTIONS_FRAMEWORK_DIRECTORY', trailingslashit( get_template_directory_uri() ) . 'inc/' );
-			require_once trailingslashit( dirname( __FILE__ ) ) . 'inc/options-framework.php';
-
-			// Loads options.php from child or parent theme
-			$optionsfile = locate_template( 'options.php' );
-			load_template( $optionsfile );
-		}
-
-		// If WooCommerce is running, check if we should be displaying the Breadcrumbs
-		if( maddisondesigns_is_woocommerce_active() && !of_get_option( 'woocommerce_breadcrumbs', '1' ) ) {
-			add_action( 'init', 'maddisondesigns_remove_woocommerce_breadcrumbs' );
-		}
 	}
 }
-add_action( 'after_setup_theme', 'maddisondesigns_setup' );
+add_action( 'after_setup_theme', 'wpaus_setup' );
 
-
-/**
- * Enable backwards compatability for title-tag support
- *
- * @return void
- */
-if ( ! function_exists( '_wp_render_title_tag' ) ) {
-	function maddisondesigns_slug_render_title() { ?>
-		<title><?php wp_title( '|', true, 'right' ); ?></title>
-	<?php }
-	add_action( 'wp_head', 'maddisondesigns_slug_render_title' );
-}
 
 
 /**
@@ -129,19 +122,19 @@ if ( ! function_exists( '_wp_render_title_tag' ) ) {
  *
  * @return string Font stylesheet or empty string if disabled.
  */
-function maddisondesigns_fonts_url() {
+function wpaus_fonts_url() {
 	$fonts_url = '';
 	$subsets = 'latin';
 
 	/* translators: If there are characters in your language that are not supported by Lato, translate this to 'off'.
 	 * Do not translate into your own language.
 	 */
-	$lato = _x( 'on', 'Lato font: on or off', 'maddisondesigns' );
+	$lato = _x( 'on', 'Lato font: on or off', 'wpaus' );
 
 	/* translators: To add an additional Lato character subset specific to your language, translate this to 'greek', 'cyrillic' or 'vietnamese'.
 	 * Do not translate into your own language.
 	 */
-	$subset = _x( 'no-subset', 'Lato font: add new subset (cyrillic)', 'maddisondesigns' );
+	$subset = _x( 'no-subset', 'Lato font: add new subset (cyrillic)', 'wpaus' );
 
 	if ( 'cyrillic' == $subset )
 		$subsets .= ',cyrillic';
@@ -165,158 +158,92 @@ function maddisondesigns_fonts_url() {
 
 
 /**
- * Adds additional stylesheets to the TinyMCE editor if needed.
- *
- * @since MaddisonDesigns 1.2.5
- *
- * @param string $mce_css CSS path to load in TinyMCE.
- * @return string The filtered CSS paths list.
- */
-function maddisondesigns_mce_css( $mce_css ) {
-	$fonts_url = maddisondesigns_fonts_url();
-
-	if ( empty( $fonts_url ) ) {
-		return $mce_css;
-	}
-
-	if ( !empty( $mce_css ) ) {
-		$mce_css .= ',';
-	}
-
-	$mce_css .= esc_url_raw( str_replace( ',', '%2C', $fonts_url ) );
-
-	return $mce_css;
-}
-add_filter( 'mce_css', 'maddisondesigns_mce_css' );
-
-
-/**
  * Register widgetized areas
  *
  * @return void
  */
-function maddisondesigns_widgets_init() {
+function wpaus_widgets_init() {
 	register_sidebar( array(
-			'name' => esc_html__( 'Main Sidebar', 'maddisondesigns' ),
-			'id' => 'sidebar-main',
-			'description' => esc_html__( 'Appears in the sidebar on posts and pages except the optional Front Page template, which has its own widgets', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
+		'name' => __( 'Main Sidebar', 'wpaus' ),
+		'id' => 'sidebar-main',
+		'description' => __( 'Appears in the sidebar on posts and pages except the optional Front Page template, which has its own widgets', 'wpaus' ),
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>'
+	) );
 
 	register_sidebar( array(
-			'name' => esc_html__( 'Blog Sidebar', 'maddisondesigns' ),
-			'id' => 'sidebar-blog',
-			'description' => esc_html__( 'Appears in the sidebar on the blog and archive pages only', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
+		'name' => __( 'Blog Sidebar', 'wpaus' ),
+		'id' => 'sidebar-blog',
+		'description' => __( 'Appears in the sidebar on the blog and archive pages only', 'wpaus' ),
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>'
+	) );
 
 	register_sidebar( array(
-			'name' => esc_html__( 'Single Post Sidebar', 'maddisondesigns' ),
-			'id' => 'sidebar-single',
-			'description' => esc_html__( 'Appears in the sidebar on single posts only', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
+		'name' => __( 'Single Post Sidebar', 'wpaus' ),
+		'id' => 'sidebar-single',
+		'description' => __( 'Appears in the sidebar on single posts only', 'wpaus' ),
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>'
+	) );
 
 	register_sidebar( array(
-			'name' => esc_html__( 'Page Sidebar', 'maddisondesigns' ),
-			'id' => 'sidebar-page',
-			'description' => esc_html__( 'Appears in the sidebar on pages only', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
+		'name' => __( 'Page Sidebar', 'wpaus' ),
+		'id' => 'sidebar-page',
+		'description' => __( 'Appears in the sidebar on pages only', 'wpaus' ),
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>'
+	) );
 
 	register_sidebar( array(
-			'name' => esc_html__( 'First Front Page Widget Area', 'maddisondesigns' ),
-			'id' => 'sidebar-homepage1',
-			'description' => esc_html__( 'Appears when using the optional Front Page template with a page set as Static Front Page', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
+		'name' => __( 'First Footer Widget Area', 'wpaus' ),
+		'id' => 'sidebar-footer1',
+		'description' => __( 'Appears in the footer sidebar', 'wpaus' ),
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>'
+	) );
 
 	register_sidebar( array(
-			'name' => esc_html__( 'Second Front Page Widget Area', 'maddisondesigns' ),
-			'id' => 'sidebar-homepage2',
-			'description' => esc_html__( 'Appears when using the optional Front Page template with a page set as Static Front Page', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
+		'name' => __( 'Second Footer Widget Area', 'wpaus' ),
+		'id' => 'sidebar-footer2',
+		'description' => __( 'Appears in the footer sidebar', 'wpaus' ),
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>'
+	) );
 
 	register_sidebar( array(
-			'name' => esc_html__( 'Third Front Page Widget Area', 'maddisondesigns' ),
-			'id' => 'sidebar-homepage3',
-			'description' => esc_html__( 'Appears when using the optional Front Page template with a page set as Static Front Page', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
+		'name' => __( 'Third Footer Widget Area', 'wpaus' ),
+		'id' => 'sidebar-footer3',
+		'description' => __( 'Appears in the footer sidebar', 'wpaus' ),
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>'
+	) );
 
 	register_sidebar( array(
-			'name' => esc_html__( 'Fourth Front Page Widget Area', 'maddisondesigns' ),
-			'id' => 'sidebar-homepage4',
-			'description' => esc_html__( 'Appears when using the optional Front Page template with a page set as Static Front Page', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
-
-	register_sidebar( array(
-			'name' => esc_html__( 'First Footer Widget Area', 'maddisondesigns' ),
-			'id' => 'sidebar-footer1',
-			'description' => esc_html__( 'Appears in the footer sidebar', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
-
-	register_sidebar( array(
-			'name' => esc_html__( 'Second Footer Widget Area', 'maddisondesigns' ),
-			'id' => 'sidebar-footer2',
-			'description' => esc_html__( 'Appears in the footer sidebar', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
-
-	register_sidebar( array(
-			'name' => esc_html__( 'Third Footer Widget Area', 'maddisondesigns' ),
-			'id' => 'sidebar-footer3',
-			'description' => esc_html__( 'Appears in the footer sidebar', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
-
-	register_sidebar( array(
-			'name' => esc_html__( 'Fourth Footer Widget Area', 'maddisondesigns' ),
-			'id' => 'sidebar-footer4',
-			'description' => esc_html__( 'Appears in the footer sidebar', 'maddisondesigns' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget' => '</aside>',
-			'before_title' => '<h3 class="widget-title">',
-			'after_title' => '</h3>'
-		) );
+		'name' => __( 'Fourth Footer Widget Area', 'wpaus' ),
+		'id' => 'sidebar-footer4',
+		'description' => __( 'Appears in the footer sidebar', 'wpaus' ),
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>'
+	) );
 }
-add_action( 'widgets_init', 'maddisondesigns_widgets_init' );
+add_action( 'widgets_init', 'wpaus_widgets_init' );
 
 
 /**
@@ -324,7 +251,7 @@ add_action( 'widgets_init', 'maddisondesigns_widgets_init' );
  *
  * @return void
  */
-function maddisondesigns_scripts_styles() {
+function wpaus_scripts_styles() {
 
 	/**
 	 * Register and enqueue our stylesheets
@@ -357,9 +284,9 @@ function maddisondesigns_scripts_styles() {
 	 * }
 	 * add_action( 'wp_enqueue_scripts', 'mytheme_dequeue_fonts', 11 );
 	 */
-	$fonts_url = maddisondesigns_fonts_url();
+	$fonts_url = wpaus_fonts_url();
 	if ( !empty( $fonts_url ) ) {
-		wp_enqueue_style( 'MaddisonDesigns-fonts', esc_url_raw( $fonts_url ), array(), null );
+		wp_enqueue_style( 'wpaus-fonts', esc_url_raw( $fonts_url ), array(), null );
 	}
 
 	// If using a child theme, auto-load the parent theme style.
@@ -394,9 +321,9 @@ function maddisondesigns_scripts_styles() {
 		wp_enqueue_script( 'commentvalidate' );
 		wp_localize_script( 'commentvalidate', 'comments_object', array(
 			'req' => get_option( 'require_name_email' ),
-			'author'  => esc_html__( 'Please enter your name', 'maddisondesigns' ),
-			'email'  => esc_html__( 'Please enter a valid email address', 'maddisondesigns' ),
-			'comment' => esc_html__( 'Please add a comment', 'maddisondesigns' ) )
+			'author'  => __( 'Please enter your name', 'wpaus' ),
+			'email'  => __( 'Please enter a valid email address', 'wpaus' ),
+			'comment' => __( 'Please add a comment', 'wpaus' ) )
 		);
 	}
 
@@ -408,7 +335,7 @@ function maddisondesigns_scripts_styles() {
 	wp_register_script( 'commonjs', trailingslashit( get_template_directory_uri() ) . 'js/common.js', array( 'jquery', 'slidebars-menu' ), '0.10.2', true );
 	wp_enqueue_script( 'commonjs' );
 }
-add_action( 'wp_enqueue_scripts', 'maddisondesigns_scripts_styles' );
+add_action( 'wp_enqueue_scripts', 'wpaus_scripts_styles' );
 
 
 /**
@@ -417,8 +344,8 @@ add_action( 'wp_enqueue_scripts', 'maddisondesigns_scripts_styles' );
  * @param string html ID
  * @return void
  */
-if ( ! function_exists( 'maddisondesigns_content_nav' ) ) {
-	function maddisondesigns_content_nav( $nav_id ) {
+if ( ! function_exists( 'wpaus_content_nav' ) ) {
+	function wpaus_content_nav( $nav_id ) {
 		global $wp_query;
 		$big = 999999999; // need an unlikely integer
 
@@ -428,12 +355,12 @@ if ( ! function_exists( 'maddisondesigns_content_nav' ) ) {
 		}
 		?>
 		<nav role="navigation" id="<?php echo $nav_id; ?>" class="<?php echo $nav_class; ?>">
-			<h3 class="assistive-text"><?php esc_html_e( 'Post navigation', 'maddisondesigns' ); ?></h3>
+			<h3 class="assistive-text"><?php _e( 'Post navigation', 'wpaus' ); ?></h3>
 
 			<?php if ( is_single() ) { // navigation links for single posts ?>
 
-				<?php previous_post_link( '<div class="nav-previous">%link</div>', '<span class="meta-nav">' . _x( '<i class="fa fa-angle-left"></i>', 'Previous post link', 'maddisondesigns' ) . '</span> %title' ); ?>
-				<?php next_post_link( '<div class="nav-next">%link</div>', '%title <span class="meta-nav">' . _x( '<i class="fa fa-angle-right"></i>', 'Next post link', 'maddisondesigns' ) . '</span>' ); ?>
+				<?php previous_post_link( '<div class="nav-previous">%link</div>', '<span class="meta-nav">' . _x( '<i class="fa fa-angle-left"></i>', 'Previous post link', 'wpaus' ) . '</span> %title' ); ?>
+				<?php next_post_link( '<div class="nav-next">%link</div>', '%title <span class="meta-nav">' . _x( '<i class="fa fa-angle-right"></i>', 'Next post link', 'wpaus' ) . '</span>' ); ?>
 
 			<?php }
 			elseif ( $wp_query->max_num_pages > 1 && ( is_home() || is_archive() || is_search() ) ) { // navigation links for home, archive, and search pages ?>
@@ -444,10 +371,8 @@ if ( ! function_exists( 'maddisondesigns_content_nav' ) ) {
 					'current' => max( 1, get_query_var( 'paged' ) ),
 					'total' => $wp_query->max_num_pages,
 					'type' => 'list',
-					'prev_text' => wp_kses( __( '<i class="fa fa-angle-left"></i> Previous', 'maddisondesigns' ), array( 'i' => array(
-						'class' => array() ) ) ),
-					'next_text' => wp_kses( __( 'Next <i class="fa fa-angle-right"></i>', 'maddisondesigns' ), array( 'i' => array(
-						'class' => array() ) ) )
+					'prev_text' => __( '<i class="fa fa-angle-left"></i> Previous', 'wpaus' ),
+					'next_text' => __( 'Next <i class="fa fa-angle-right"></i>', 'wpaus' ),
 				) ); ?>
 
 			<?php } ?>
@@ -462,7 +387,7 @@ if ( ! function_exists( 'maddisondesigns_content_nav' ) ) {
  * Template for comments and pingbacks.
  *
  * To override this walker in a child theme without modifying the comments template
- * simply create your own maddisondesigns_comment(), and that function will be used instead.
+ * simply create your own wpaus_comment(), and that function will be used instead.
  *
  * Used as a callback by wp_list_comments() for displaying the comments.
  * (Note the lack of a trailing </li>. WordPress will add it itself once it's done listing any children and whatnot)
@@ -472,8 +397,8 @@ if ( ! function_exists( 'maddisondesigns_content_nav' ) ) {
  * @param integer Comment depth
  * @return void
  */
-if ( ! function_exists( 'maddisondesigns_comment' ) ) {
-	function maddisondesigns_comment( $comment, $args, $depth ) {
+if ( ! function_exists( 'wpaus_comment' ) ) {
+	function wpaus_comment( $comment, $args, $depth ) {
 		$GLOBALS['comment'] = $comment;
 		switch ( $comment->comment_type ) {
 		case 'pingback' :
@@ -481,7 +406,7 @@ if ( ! function_exists( 'maddisondesigns_comment' ) ) {
 			// Display trackbacks differently than normal comments ?>
 			<li <?php comment_class(); ?> id="comment-<?php comment_ID(); ?>">
 				<article id="comment-<?php comment_ID(); ?>" class="pingback">
-					<p><?php esc_html_e( 'Pingback:', 'maddisondesigns' ); ?> <?php comment_author_link(); ?> <?php edit_comment_link( esc_html__( '(Edit)', 'maddisondesigns' ), '<span class="edit-link">', '</span>' ); ?></p>
+					<p><?php _e( 'Pingback:', 'wpaus' ); ?> <?php comment_author_link(); ?> <?php edit_comment_link( __( '(Edit)', 'maddisondesigns' ), '<span class="edit-link">', '</span>' ); ?></p>
 				</article> <!-- #comment-##.pingback -->
 			<?php
 			break;
@@ -496,19 +421,19 @@ if ( ! function_exists( 'maddisondesigns_comment' ) ) {
 						printf( '<cite class="fn">%1$s %2$s</cite>',
 							get_comment_author_link(),
 							// If current post author is also comment author, make it known visually.
-							( $comment->user_id === $post->post_author ) ? '<span> ' . esc_html__( 'Post author', 'maddisondesigns' ) . '</span>' : '' );
+							( $comment->user_id === $post->post_author ) ? '<span> ' . __( 'Post author', 'wpaus' ) . '</span>' : '' );
 						printf( '<a href="%1$s" title="Posted %2$s"><time itemprop="datePublished" datetime="%3$s">%4$s</time></a>',
 							esc_url( get_comment_link( $comment->comment_ID ) ),
-							sprintf( esc_html__( '%1$s @ %2$s', 'maddisondesigns' ), esc_html( get_comment_date() ), esc_attr( get_comment_time() ) ),
+							sprintf( __( '%1$s @ %2$s', 'wpaus' ), esc_html( get_comment_date() ), esc_attr( get_comment_time() ) ),
 							get_comment_time( 'c' ),
 							/* Translators: 1: date, 2: time */
-							sprintf( esc_html__( '%1$s at %2$s', 'maddisondesigns' ), get_comment_date(), get_comment_time() )
+							sprintf( __( '%1$s at %2$s', 'wpaus' ), get_comment_date(), get_comment_time() )
 						);
 						?>
 					</header> <!-- .comment-meta -->
 
 					<?php if ( '0' == $comment->comment_approved ) { ?>
-						<p class="comment-awaiting-moderation"><?php esc_html_e( 'Your comment is awaiting moderation.', 'maddisondesigns' ); ?></p>
+						<p class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'wpaus' ); ?></p>
 					<?php } ?>
 
 					<section class="comment-content comment">
@@ -516,7 +441,7 @@ if ( ! function_exists( 'maddisondesigns_comment' ) ) {
 					</section> <!-- .comment-content -->
 
 					<div class="reply">
-						<?php comment_reply_link( array_merge( $args, array( 'reply_text' => wp_kses( __( 'Reply <span>&darr;</span>', 'maddisondesigns' ), array( 'span' => array() ) ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
+						<?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Reply <span>&darr;</span>', 'wpaus' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
 					</div> <!-- .reply -->
 				</article> <!-- #comment-## -->
 			<?php
@@ -527,91 +452,16 @@ if ( ! function_exists( 'maddisondesigns_comment' ) ) {
 
 
 /**
- * Update the Comments form so that the 'required' span is contained within the form label.
- *
- * @param string Comment form fields html
- * @return string The updated comment form fields html
- */
-function maddisondesigns_comment_form_default_fields( $fields ) {
-
-	$commenter = wp_get_current_commenter();
-	$req = get_option( 'require_name_email' );
-	$aria_req = ( $req ? ' aria-required="true"' : "" );
-
-	$fields[ 'author' ] = '<p class="comment-form-author">' . '<label for="author">' . esc_html__( 'Name', 'maddisondesigns' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label> ' . '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30"' . $aria_req . ' /></p>';
-
-	$fields[ 'email' ] =  '<p class="comment-form-email"><label for="email">' . esc_html__( 'Email', 'maddisondesigns' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label> ' . '<input id="email" name="email" type="text" value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30"' . $aria_req . ' /></p>';
-
-	$fields[ 'url' ] =  '<p class="comment-form-url"><label for="url">' . esc_html__( 'Website', 'maddisondesigns' ) . '</label>' . '<input id="url" name="url" type="text" value="' . esc_attr( $commenter['comment_author_url'] ) . '" size="30" /></p>';
-
-	return $fields;
-
-}
-add_action( 'comment_form_default_fields', 'maddisondesigns_comment_form_default_fields' );
-
-
-/**
- * Update the Comments form to add a 'required' span to the Comment textarea within the form label, because it's pointless
- * submitting a comment that doesn't actually have any text in the comment field!
- *
- * @param string Comment form textarea html
- * @return string The updated comment form textarea html
- */
-function maddisondesigns_comment_form_field_comment( $field ) {
-
-	$field = '<p class="comment-form-comment"><label for="comment">' . _x( 'Comment', 'noun', 'maddisondesigns' ) . ' <span class="required">*</span></label><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>';
-
-	return $field;
-
-}
-add_action( 'comment_form_field_comment', 'maddisondesigns_comment_form_field_comment' );
-
-
-/**
  * Prints HTML with meta information for current post: author and date
  *
  * @return void
  */
-if ( ! function_exists( 'maddisondesigns_posted_on' ) ) {
-	function maddisondesigns_posted_on() {
-		$post_icon = '';
-		switch ( get_post_format() ) {
-			case 'aside':
-				$post_icon = 'fa-file-o';
-				break;
-			case 'audio':
-				$post_icon = 'fa-volume-up';
-				break;
-			case 'chat':
-				$post_icon = 'fa-comment';
-				break;
-			case 'gallery':
-				$post_icon = 'fa-camera';
-				break;
-			case 'image':
-				$post_icon = 'fa-picture-o';
-				break;
-			case 'link':
-				$post_icon = 'fa-link';
-				break;
-			case 'quote':
-				$post_icon = 'fa-quote-left';
-				break;
-			case 'status':
-				$post_icon = 'fa-user';
-				break;
-			case 'video':
-				$post_icon = 'fa-video-camera';
-				break;
-			default:
-				$post_icon = 'fa-calendar';
-				break;
-		}
-
+if ( ! function_exists( 'wpaus_posted_on' ) ) {
+	function wpaus_posted_on() {
 		// Translators: 1: Icon 2: Publish date in ISO format 3: Post date
 		$date = sprintf( '<time class="entry-date" datetime="%1$s" itemprop="datePublished">%2$s</time>',
 			esc_attr( get_the_date( 'c' ) ),
-			esc_html( maddisondesigns_get_relative_date() )
+			esc_html( wpaus_get_relative_date() )
 		);
 
 		// Translators: 1: Author
@@ -620,22 +470,17 @@ if ( ! function_exists( 'maddisondesigns_posted_on' ) ) {
 		);
 
 		// Return the Categories as a list
-		$categories_list = get_the_category_list( esc_html__( ', ', 'maddisondesigns' ) );
+		$categories_list = get_the_category_list( __( ', ', 'wpaus' ) );
 
 		// Translators: 1: Permalink 2: Title 3: No. of Comments
 		$comments = sprintf( '<span class="comments-link"><i class="fa fa-comment"></i> <a href="%1$s" title="%2$s">%3$s</a></span>',
 			esc_url( get_comments_link() ),
-			esc_attr( esc_html__( 'Comment on ' . the_title_attribute( 'echo=0' ) ) ),
-			( get_comments_number() > 0 ? sprintf( _n( '%1$s Comment', '%1$s Comments', get_comments_number(), 'maddisondesigns' ), get_comments_number() ) : esc_html__( 'No Comments', 'maddisondesigns' ) )
+			esc_attr( __( 'Comment on ' . the_title_attribute( 'echo=0' ) ) ),
+			( get_comments_number() > 0 ? sprintf( _n( '%1$s Comment', '%1$s Comments', get_comments_number(), 'wpaus' ), get_comments_number() ) : __( 'No Comments', 'maddisondesigns' ) )
 		);
 
 		// Translators: 1: Date 2: Categories 3: Author
-		printf( wp_kses( __( '<div class="header-meta"><i class="fa %1$s"></i> Posted in <span class="post-categories">%2$s</span> %3$s by %4$s</div>', 'maddisondesigns' ), array(
-			'div' => array (
-				'class' => array() ),
-			'span' => array(
-				'class' => array() ) ) ),
-			$post_icon,
+		printf( __( '<div class="header-meta"><i class="fa fa-calendar"></i> Posted in <span class="post-categories">%1$s</span> %2$s by %3$s</div>', 'wpaus' ),
 			$categories_list,
 			$date,
 			$author
@@ -649,7 +494,7 @@ if ( ! function_exists( 'maddisondesigns_posted_on' ) ) {
  *
  * @return string Post date or relative date
  */
-function maddisondesigns_get_relative_date() {
+function wpaus_get_relative_date() {
 	$timeStr = "";
 	$seconds = current_time('timestamp') - get_the_time('U');
 
@@ -663,104 +508,18 @@ function maddisondesigns_get_relative_date() {
 	return $timeStr;
 }
 
-
-/**
- * Prints HTML with meta information for current post: categories, tags, permalink
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_entry_meta' ) ) {
-	function maddisondesigns_entry_meta() {
-		// Return the Tags as a list
-		$tag_list = "";
-		if ( get_the_tag_list() ) {
-			$tag_list = get_the_tag_list( '<span class="post-tags">', esc_html__( ', ', 'maddisondesigns' ), '</span>' );
-		}
-
-		// Translators: 1 is tag
-		if ( $tag_list ) {
-			printf( wp_kses( __( '<i class="fa fa-tag"></i> %1$s', 'maddisondesigns' ), array( 'i' => array( 'class' => array() ) ) ), $tag_list );
-		}
-	}
-}
-
-
 /**
  * Adjusts content_width value for full-width templates and attachments
  *
  * @return void
  */
-function maddisondesigns_content_width() {
+function wpaus_content_width() {
 	if ( is_page_template( 'page-templates/full-width.php' ) || is_attachment() ) {
 		global $content_width;
 		$content_width = 1200;
 	}
 }
-add_action( 'template_redirect', 'maddisondesigns_content_width' );
-
-
-/**
- * Change the "read more..." link so it links to the top of the page rather than part way down
- *
- * @param string The 'Read more' link
- * @return string The link to the post url without the more tag appended on the end
- */
-function maddisondesigns_remove_more_jump_link( $link ) {
-	$offset = strpos( $link, '#more-' );
-	if ( $offset ) {
-		$end = strpos( $link, '"', $offset );
-	}
-	if ( $end ) {
-		$link = substr_replace( $link, '', $offset, $end-$offset );
-	}
-	return $link;
-}
-add_filter( 'the_content_more_link', 'maddisondesigns_remove_more_jump_link' );
-
-
-/**
- * Returns a "Continue Reading" link for excerpts
- *
- * @return string The 'Continue reading' link
- */
-function maddisondesigns_continue_reading_link() {
-	return '&hellip;<p><a class="more-link" href="'. esc_url( get_permalink() ) . '" title="' . esc_html__( 'Continue reading', 'maddisondesigns' ) . ' &lsquo;' . get_the_title() . '&rsquo;">' . wp_kses( __( 'Continue reading <span class="meta-nav">&rarr;</span>', 'maddisondesigns' ), array( 'span' => array(
-			'class' => array() ) ) ) . '</a></p>';
-}
-
-
-/**
- * Replaces "[...]" (appended to automatically generated excerpts) with the maddisondesigns_continue_reading_link().
- *
- * @param string Auto generated excerpt
- * @return string The filtered excerpt
- */
-function maddisondesigns_auto_excerpt_more( $more ) {
-	return maddisondesigns_continue_reading_link();
-}
-add_filter( 'excerpt_more', 'maddisondesigns_auto_excerpt_more' );
-
-
-/**
- * Extend the user contact methods to include Twitter, Facebook and Google+
- *
- * @param array List of user contact methods
- * @return array The filtered list of updated user contact methods
- */
-function maddisondesigns_new_contactmethods( $contactmethods ) {
-	// Add Twitter
-	$contactmethods['twitter'] = 'Twitter';
-
-	//add Facebook
-	$contactmethods['facebook'] = 'Facebook';
-
-	//add Google Plus
-	$contactmethods['googleplus'] = 'Google+';
-
-	return $contactmethods;
-}
-add_filter( 'user_contactmethods', 'maddisondesigns_new_contactmethods', 10, 1 );
-
+add_action( 'template_redirect', 'wpaus_content_width' );
 
 /**
  * Add a filter for wp_nav_menu to add an extra class for menu items that have children (ie. sub menus)
@@ -769,7 +528,7 @@ add_filter( 'user_contactmethods', 'maddisondesigns_new_contactmethods', 10, 1 )
  * @param Menu items
  * @return array An extra css class is on menu items with children
  */
-function maddisondesigns_add_menu_parent_class( $items ) {
+function wpaus_add_menu_parent_class( $items ) {
 
 	$parents = array();
 	foreach ( $items as $item ) {
@@ -786,51 +545,31 @@ function maddisondesigns_add_menu_parent_class( $items ) {
 
 	return $items;
 }
-add_filter( 'wp_nav_menu_objects', 'maddisondesigns_add_menu_parent_class' );
-
-
-/**
- * Add Filter to allow Shortcodes to work in the Sidebar
- */
-add_filter( 'widget_text', 'do_shortcode' );
-
+add_filter( 'wp_nav_menu_objects', 'wpaus_add_menu_parent_class' );
 
 /**
  * Return an unordered list of linked social media icons, based on the urls provided in the Theme Options
  *
  * @return string Unordered list of linked social media icons
  */
-if ( ! function_exists( 'maddisondesigns_get_social_media' ) ) {
-	function maddisondesigns_get_social_media() {
+if ( ! function_exists( 'wpaus_get_social_media' ) ) {
+	function wpaus_get_social_media() {
 		$output = '';
 		$icons = array(
-			array( 'url' => of_get_option( 'social_twitter', '' ), 'icon' => 'fa-twitter', 'title' => esc_html__( 'Follow us on Twitter', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_facebook', '' ), 'icon' => 'fa-facebook', 'title' => esc_html__( 'Friend us on Facebook', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_googleplus', '' ), 'icon' => 'fa-google-plus', 'title' => esc_html__( 'Connect with us on Google+', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_linkedin', '' ), 'icon' => 'fa-linkedin', 'title' => esc_html__( 'Connect with us on LinkedIn', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_slideshare', '' ), 'icon' => 'fa-slideshare', 'title' => esc_html__( 'Follow us on SlideShare', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_dribbble', '' ), 'icon' => 'fa-dribbble', 'title' => esc_html__( 'Follow us on Dribbble', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_tumblr', '' ), 'icon' => 'fa-tumblr', 'title' => esc_html__( 'Follow us on Tumblr', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_github', '' ), 'icon' => 'fa-github', 'title' => esc_html__( 'Fork us on GitHub', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_bitbucket', '' ), 'icon' => 'fa-bitbucket', 'title' => esc_html__( 'Fork us on Bitbucket', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_foursquare', '' ), 'icon' => 'fa-foursquare', 'title' => esc_html__( 'Follow us on Foursquare', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_youtube', '' ), 'icon' => 'fa-youtube', 'title' => esc_html__( 'Subscribe to us on YouTube', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_vimeo', '' ), 'icon' => 'fa-vimeo', 'title' => esc_html__( 'Follow us on Vimeo', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_instagram', '' ), 'icon' => 'fa-instagram', 'title' => esc_html__( 'Follow us on Instagram', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_vine', '' ), 'icon' => 'fa-vine', 'title' => esc_html__( 'Follow us on Vine', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_flickr', '' ), 'icon' => 'fa-flickr', 'title' => esc_html__( 'Connect with us on Flickr', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_pinterest', '' ), 'icon' => 'fa-pinterest', 'title' => esc_html__( 'Follow us on Pinterest', 'maddisondesigns' ) ),
-			array( 'url' => of_get_option( 'social_rss', '' ), 'icon' => 'fa-rss', 'title' => esc_html__( 'Subscribe to our RSS Feed', 'maddisondesigns' ) )
+			array( 'url' => of_get_option( 'social_twitter', '' ), 'icon' => 'fa-twitter', 'title' => __( 'Follow us on Twitter', 'wpaus' ) ),
+			array( 'url' => of_get_option( 'social_facebook', '' ), 'icon' => 'fa-facebook', 'title' => __( 'Friend us on Facebook', 'wpaus' ) ),
+			array( 'url' => of_get_option( 'social_slideshare', '' ), 'icon' => 'fa-slideshare', 'title' => __( 'Follow us on SlideShare', 'wpaus' ) ),
+			array( 'url' => of_get_option( 'social_github', '' ), 'icon' => 'fa-github', 'title' => __( 'Fork us on GitHub', 'wpaus' ) ),
+			array( 'url' => of_get_option( 'social_youtube', '' ), 'icon' => 'fa-youtube', 'title' => __( 'Subscribe to us on YouTube', 'wpaus' ) ),
 		);
 
 		foreach ( $icons as $key ) {
 			$value = $key['url'];
 			if ( !empty( $value ) ) {
-				$output .= sprintf( '<li class="%1$s"><a href="%2$s" title="%3$s"%4$s><i class="fa %5$s"></i></a></li>',
+				$output .= sprintf( '<li class="%1$s"><a href="%2$s" title="%3$s" target="_blank"><i class="fa %4$s"></i></a></li>',
 					str_replace( 'fa-', 'social-', $key['icon'] ),
 					esc_url( $value ),
 					$key['title'],
-					( !of_get_option( 'social_newtab', '0' ) ? '' : ' target="_blank"' ),
 					$key['icon']
 				);
 			}
@@ -849,17 +588,14 @@ if ( ! function_exists( 'maddisondesigns_get_social_media' ) ) {
  *
  * @return string Footer credits & link
  */
-if ( ! function_exists( 'maddisondesigns_get_credits' ) ) {
-	function maddisondesigns_get_credits() {
-		$output = '';
-		$output = sprintf( '%1$s <a href="%2$s" title="%3$s">%4$s</a>',
-			esc_html__( 'Proudly powered by', 'maddisondesigns' ),
-			esc_url( esc_html__( 'http://wordpress.org/', 'maddisondesigns' ) ),
-			esc_attr( esc_html__( 'Semantic Personal Publishing Platform', 'maddisondesigns' ) ),
-			esc_html__( 'WordPress', 'maddisondesigns' )
+if ( ! function_exists( 'wpaus_get_credits' ) ) {
+	function wpaus_get_credits() {
+		return sprintf( '%1$s <a href="%2$s" title="%3$s">%4$s</a>',
+			__( 'Proudly powered by', 'wpaus' ),
+			esc_url( __( 'https://wordpress.org/', 'wpaus' ) ),
+			esc_attr( __( 'Semantic Personal Publishing Platform', 'wpaus' ) ),
+			__( 'WordPress', 'wpaus' )
 		);
-
-		return $output;
 	}
 }
 
@@ -869,7 +605,7 @@ if ( ! function_exists( 'maddisondesigns_get_credits' ) ) {
  *
  * @return void
  */
-function maddisondesigns_theme_options_styles() {
+function wpaus_theme_options_styles() {
 	$output = '';
 	$imagepath =  trailingslashit( get_template_directory_uri() ) . 'images/';
 	$background_defaults = array(
@@ -877,7 +613,8 @@ function maddisondesigns_theme_options_styles() {
 		'image' => $imagepath . 'dark-noise.jpg',
 		'repeat' => 'repeat',
 		'position' => 'top left',
-		'attachment'=>'scroll' );
+		'attachment'=>'scroll'
+	);
 
 	$background = of_get_option( 'banner_background', $background_defaults );
 	if ( $background ) {
@@ -901,237 +638,17 @@ function maddisondesigns_theme_options_styles() {
 	}
 
 	if ( $output != '' ) {
-		$output = "\n<style>\n" . $output . "\n</style>\n";
-		echo $output;
+		echo "\n<style>\n", $output, "\n</style>\n";
 	}
 }
-add_action( 'wp_head', 'maddisondesigns_theme_options_styles' );
-
-/**
- * Recreate the default filters on the_content
- * This will make it much easier to output the Theme Options Editor content with proper/expected formatting.
- * We don't include an add_filter for 'prepend_attachment' as it causes an image to appear in the content, on attachment pages.
- * Also, since the Theme Options editor doesn't allow you to add images anyway, no big deal.
- */
-add_filter( 'meta_content', 'wptexturize' );
-add_filter( 'meta_content', 'convert_smilies' );
-add_filter( 'meta_content', 'convert_chars'  );
-add_filter( 'meta_content', 'wpautop' );
-add_filter( 'meta_content', 'shortcode_unautop'  );
-
-
-/**
- * Unhook the WooCommerce Wrappers
- */
-remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
-remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
-
-
-/**
- * Outputs the opening container div for WooCommerce
- *
- * @since MaddisonDesigns 1.3
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_before_woocommerce_wrapper' ) ) {
-	function maddisondesigns_before_woocommerce_wrapper() {
-		echo '<div id="primary" class="site-content row" role="main">';
-	}
-}
-
-
-/**
- * Outputs the closing container div for WooCommerce
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_after_woocommerce_wrapper' ) ) {
-	function maddisondesigns_after_woocommerce_wrapper() {
-		echo '</div> <!-- /#primary.site-content.row -->';
-	}
-}
-
-
-/**
- * Check if WooCommerce is active
- *
- * @return void
- */
-function maddisondesigns_is_woocommerce_active() {
-	if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-
-/**
- * Check if WooCommerce is active and a WooCommerce template is in use and output the containing div
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_setup_woocommerce_wrappers' ) ) {
-	function maddisondesigns_setup_woocommerce_wrappers() {
-		if ( maddisondesigns_is_woocommerce_active() && is_woocommerce() ) {
-				add_action( 'maddisondesigns_before_woocommerce', 'maddisondesigns_before_woocommerce_wrapper', 10, 0 );
-				add_action( 'maddisondesigns_after_woocommerce', 'maddisondesigns_after_woocommerce_wrapper', 10, 0 );
-		}
-	}
-	add_action( 'template_redirect', 'maddisondesigns_setup_woocommerce_wrappers', 9 );
-}
-
-
-/**
- * Outputs the opening wrapper for the WooCommerce content
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_woocommerce_before_main_content' ) ) {
-	function maddisondesigns_woocommerce_before_main_content() {
-		if( ( is_shop() && !of_get_option( 'woocommerce_shopsidebar', '1' ) ) || ( is_product() && !of_get_option( 'woocommerce_productsidebar', '1' ) ) ) {
-			echo '<div class="col grid_12_of_12">';
-		}
-		else {
-			echo '<div class="col grid_8_of_12">';
-		}
-	}
-	add_action( 'woocommerce_before_main_content', 'maddisondesigns_woocommerce_before_main_content', 10 );
-}
-
-
-/**
- * Outputs the closing wrapper for the WooCommerce content
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_woocommerce_after_main_content' ) ) {
-	function maddisondesigns_woocommerce_after_main_content() {
-		echo '</div>';
-	}
-	add_action( 'woocommerce_after_main_content', 'maddisondesigns_woocommerce_after_main_content', 10 );
-}
-
-
-/**
- * Remove the sidebar from the WooCommerce templates
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_remove_woocommerce_sidebar' ) ) {
-	function maddisondesigns_remove_woocommerce_sidebar() {
-		if( ( is_shop() && !of_get_option( 'woocommerce_shopsidebar', '1' ) ) || ( is_product() && !of_get_option( 'woocommerce_productsidebar', '1' ) ) ) {
-			remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
-		}
-	}
-	add_action( 'woocommerce_before_main_content', 'maddisondesigns_remove_woocommerce_sidebar' );
-}
-
-
-/**
- * Remove the breadcrumbs from the WooCommerce pages
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_remove_woocommerce_breadcrumbs' ) ) {
-	function maddisondesigns_remove_woocommerce_breadcrumbs() {
-		remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20, 0 );
-	}
-}
-
-
-/**
- * Set the number of products to display on the WooCommerce shop page
- *
- * @return void
- */
-if ( ! function_exists( 'maddisondesigns_set_number_woocommerce_products' ) ) {
-	function maddisondesigns_set_number_woocommerce_products() {
-		if ( of_get_option( 'shop_products', '12' ) ) {
-			$numprods = "return " . sanitize_text_field( of_get_option( 'shop_products', '12' ) ) . ";";
-			add_filter( 'loop_shop_per_page', create_function( '$cols', $numprods ), 20 );
-		}
-	}
-	add_action( 'init', 'maddisondesigns_set_number_woocommerce_products' );
-}
-
-
-/**
- * Prevent WordPress From Participating In Pingback Denial of Service Attacks
- */
-function maddisondesigns_remove_xmlrpc_pingback_ping( $methods ) {
-	unset( $methods['pingback.ping'] );
-	return $methods;
-}
-add_filter( 'xmlrpc_methods', 'maddisondesigns_remove_xmlrpc_pingback_ping' );
-
-
-/**
- * Provide an extra layer of security by changing the login error message so it's not specific as to whether the Username or Password was incorrect
- */
-if ( ! function_exists( 'maddisondesigns_failed_login' ) ) {
-	function maddisondesigns_failed_login() {
-		return '<strong>ERROR:</strong> The login information you have entered is incorrect.';
-	}
-	add_filter( 'login_errors', 'maddisondesigns_failed_login' );
-}
-
-/*
- * Filter the Gravity Forms button type to change it to a proper button
- */
-function maddisondesigns_form_submit_button( $button, $form ) {
-	$button = str_replace( "input", "button", $button );
-	$button = str_replace( "/", "", $button );
-	$button .= "{$form['button']['text']}</button>";
-	return $button;
-}
-add_filter( "gform_submit_button", "maddisondesigns_form_submit_button", 10, 2 );
-
-
-/*
- * Return the html for displaying the social media share buttons
- */
-function maddisondesigns_get_share_buttons() {
-	$returnStr = "";
-
-	$returnStr .= '<ul class="share-buttons">';
-
-	$returnStr .= '<li class="share-title">';
-	$returnStr .= 'Share this post';
-	$returnStr .= '</li>';
-
-	// Facebook
-	$returnStr .= '<li>';
-	$returnStr .= '<a href="https://www.facebook.com/sharer/sharer.php?u=' . urlencode( get_permalink() ) . '" target="_blank" title="Share on Facebook">';
-	$returnStr .= '<i class="fa fa-facebook"></i></a>';
-	$returnStr .= '</li>';
-
-	// Twitter
-	$returnStr .= '<li>';
-	$returnStr .= '<a href="https://twitter.com/intent/tweet?source=' . urlencode( get_permalink() ) . '&text=' . urlencode( get_the_title() . ' ' ) . urlencode( get_permalink() ) . '&via=maddisondesigns" target="_blank" title="Tweet on Twitter">';
-	$returnStr .= '<i class="fa fa-twitter"></i></a>';
-	$returnStr .= '</li>';
-
-	// LinkedIn
-	$returnStr .= '<li>';
-	$returnStr .= '<a href="http://www.linkedin.com/shareArticle?mini=true&url=' . urlencode( get_permalink() ) . '&title=' . urlencode( get_the_title() ) . '&source=' . urlencode( get_permalink() ) . '&summary=' . urlencode( get_the_title() ) . '" target="_blank" title="Share on LinkedIn">';
-	$returnStr .= '<i class="fa fa-linkedin"></i></a>';
-	$returnStr .= '</li>';
-
-	$returnStr .= '</ul>';
-
-	return $returnStr;
-}
-
+add_action( 'wp_head', 'wpaus_theme_options_styles' );
 
 /**
  * Create a shortcode to display a Font Awesome icon with link
  *
- * Usage: [wpmelb_font_awesome icon="fa-twitter"]http://twitter.com[/wpmelb_font_awesome]
+ * Usage: [wpaus_font_awesome icon="fa-twitter"]http://twitter.com[/wpaus_font_awesome]
  */
-function wpmelb_font_awesome( $atts, $content=null ) {
+function wpaus_font_awesome( $atts, $content=null ) {
 	$returnStr = "";
 
 	extract( shortcode_atts( array(
@@ -1154,49 +671,57 @@ function wpmelb_font_awesome( $atts, $content=null ) {
 
 	return $returnStr;
 }
-add_shortcode( 'wpmelb_font_awesome', 'wpmelb_font_awesome' );
+add_shortcode( 'wpaus_font_awesome', 'wpaus_font_awesome' );
 
 /**
  * Grab the next meetup events
  */
-function wpmelb_get_meetup_events( $count, $skip, $description, $venue, $transientStr) {
+function wpaus_get_meetup_events( $count, $skip, $description, $venue, $transient_name ) {
 	$meetupEndpoint = "";
+
+	$meetup_group = trim( trim( parse_url( of_get_option( 'meetup_url', '' ), PHP_URL_PATH ), '/' ) );
+
+	if ( ! $meetup_group ) {
+		return '<em><strong>Uh Oh!</strong> Please configure the Meetup URL in Theme Settings.</em>';
+	}
 
 	// Doco - http://www.meetup.com/meetup_api/docs/2/events/
 	$page = $count + $skip;
-	$meetupEndpoint = "https://api.meetup.com/2/events?&sign=true&photo-host=public&group_urlname=WordPress-Melbourne&page=" . $page;
+	$meetupEndpoint = "https://api.meetup.com/2/events?&sign=true&photo-host=public&group_urlname={$meetup_group}&page={$page}";
 
-	return wpmelb_meetup_events( $skip, $description, $venue, $meetupEndpoint, $transientStr );
+	return wpaus_meetup_events( $skip, $description, $venue, $meetupEndpoint, $transient_name );
 }
 
 /**
  * Grab the meetup events and store in a transient
  */
-function wpmelb_meetup_events( $skip, $description, $venue, $endpoint, $transientStr ) {
+function wpaus_meetup_events( $skip, $description, $venue, $endpoint, $transient_name ) {
 	$returnStr = "";
 
 	// Since the user can define the transient name, lets also append a default name
-	$transientStr = "wpmelb_meetup_" . $transientStr;
+	$classStr = "wpaus_meetup_" . $transient_name . ' wpaus_meetup_' . $transient_name;
+	$transient_name = "meetup_" . $transient_name . '_' . md5( $endpoint );
 
 	// we store the response in a transient, lets try grab it
-	$response = get_transient( $transientStr );
+	$results = get_transient( $transient_name );
 
 	// if the transient is empty, then grab the data again
-	if( $response === false ){
+	if ( false === $results ) {
 
 		// get the response from the meetup api
-		$response = wp_remote_get( $endpoint );
+		$response = wp_safe_remote_get( $endpoint );
 
-		// store the response for a day
-		set_transient( $transientStr, $response, DAY_IN_SECONDS );
+		$results = false;
+		if ( ! is_wp_error( $response ) ) {
+			$results = json_decode( $response['body'], true );
+		}
+
+		// store the response for a period of time.
+		set_transient( $transient_name, $results, $results ? 6 * HOUR_IN_SECONDS : 5 * MINUTE_IN_SECONDS );
 
 	}
 
-	if ( !is_wp_error( $response ) ) {
-		// lets format the response
-		$header = $response['headers'];
-		$body = $response['body'];
-		$results = json_decode($body, TRUE);
+	if ( false !== $results ) {
 		$collection_array = $results['results'];
 
 		// set the number of events we want to skip
@@ -1207,41 +732,65 @@ function wpmelb_meetup_events( $skip, $description, $venue, $endpoint, $transien
 
 		if ( !empty( $collection_array ) ) {
 			// start a list
-			$returnStr = '<ul class="wpmelb-meetups ' . $transientStr . '">';
+			$returnStr = '<ul class="wpaus-meetups ' . $classStr . '">';
 
 			// create a list item for each event
-			foreach( $collection_array as $collection_item ) {
+			foreach ( $collection_array as $collection_item ) {
 
 				// event counter
 				$eventCounter++;
 
 				// Check if we need to skip any meetups
-				if( $eventCounter > $skipCounter ) {
+				if ( $eventCounter > $skipCounter ) {
 					// grab the time stamp for this event
 					$timestamp = $collection_item['time'] + $collection_item['utc_offset'];
 
 					// trim the milliseconds, aint nobody got time for that
 					$timestamp_trim = substr( $timestamp, 0, -3 );
 
-					// format the timestamp into a usable date
-					$date_time = new DateTime( "@$timestamp_trim", new DateTimeZone('Australia/Victoria') );
-					$date = '<span class="meetup-date">' . $date_time->format( 'l jS M Y' ) . '</span><span class="meetup-time">'. $date_time->format( 'h:i a' ) . '</span>';
+					$event_name = $collection_item['name'];
+					// Strip off any prefixed `[..]`'s.
+					$event_name = preg_replace( '!^\[[^]]+\]!', '', $event_name );
 
-					$returnStr .= '<li class="' . strtolower( str_replace( ' ', '-', $collection_item['name'] ) ) . '">';
-					$returnStr .= '<h2><a class="meetup-name" href="' . $collection_item['event_url'] . '" target="_blank">' . $collection_item['name'] . '</a></h2>';
-					$returnStr .= '<span class="meetup-datetime"><i class="fa fa-calendar"></i>' . $date . '</span>';
-					if( $venue ) {
-						$returnStr .= '<span class="meetup-location"><i class="fa fa-map-marker"></i>';
-						$returnStr .= sprintf( '%1$s %2$s, %3$s %4$s' ,
-							$collection_item['venue']['address_1'],
-							$collection_item['venue']['address_2'],
-							$collection_item['venue']['city'],
-							$collection_item['venue']['state'] );
-						$returnStr .= '</span>';
+					$classes = array( $event_name );
+					if ( ! empty( $collection_item['venue']['city'] ) ) {
+						$classes[] = $collection_item['venue']['city'];
 					}
-					if( $description ) {
-						$returnStr .= '<div class="meetup-description">' . $collection_item['description'] . '</div>';
-						$returnStr .= '<p><a class="meetup-link" href="' . $collection_item['event_url'] . '" target="_blank">View & RSVP on meetup.com</a></p>';
+					if ( preg_match( '!^\[([^]]+)\]!', $collection_item['name'], $m ) ) {
+						$classes[] = $m[1];
+					}
+					$classes = array_map( 'sanitize_title', $classes );
+					$classes = array_unique( $classes );
+
+					// format the timestamp into a usable date
+					$date_time = new DateTime( "@$timestamp_trim", new DateTimeZone( get_option( 'timezone_string' ) ?: 'Australia/Sydney' ) );
+					$date = '<span class="meetup-date">' . $date_time->format( 'l jS M Y' ) . '</span><span class="meetup-time">'. $date_time->format( 'g:i a' ) . '</span>';
+
+					$returnStr .= '<li class="' . implode( ' ', $classes ) . '">';
+					$returnStr .= '<h2><a class="meetup-name" href="' . $collection_item['event_url'] . '" target="_blank">' . $event_name. '</a></h2>';
+					$returnStr .= '<span class="meetup-datetime"><i class="fa fa-calendar"></i>' . $date . '</span>';
+					if ( $venue || $venue_full ) {
+						$address = sprintf( '%s (%s)',
+							$collection_item['venue']['name'],
+							implode( ' ', array_filter( array_unique( array_map( 'trim',
+								preg_split( '/[\s,]+/',
+									($collection_item['venue']['address_1'] ?? '') . ' ' .
+									($collection_item['venue']['address_2'] ?? '') . ' ' .
+									($collection_item['venue']['city'] ?? '') . ' ' .
+									($collection_item['venue']['state'] ?? '')
+								)
+							) ) ) )
+						);
+						$google_maps_url = 'https://www.google.com/maps/search/' . urlencode( $address );
+
+						$returnStr .= '<span class="meetup-location"><i class="fa fa-map-marker"></i>' .
+							'<a href="' . $google_maps_url . '">' .
+							( 'with_address' === $venue ? $address : $collection_item['venue']['name'] ) .
+							'</a></span>';
+					}
+					if ( $description ) {
+						$returnStr .= '<div class="meetup-description">' . wp_kses_post( $collection_item['description'] ) . '</div>';
+						$returnStr .= '<p><a class="meetup-link" href="' . esc_url( $collection_item['event_url'] ) . '" target="_blank">View & RSVP on meetup.com</a></p>';
 					}
 					$returnStr .= '</li>';
 				}
@@ -1260,69 +809,128 @@ function wpmelb_meetup_events( $skip, $description, $venue, $endpoint, $transien
 /**
  * Create a shortcode to display a list of WP melbourne meetups
  *
- * Usage: [wpmelb_display_meetups count="5" skip="1" description="show/hide" venue="show/hide"]
+ * Usage: [wpaus_display_meetups count="5" skip="1" description="show/hide" venue="show/hide"]
  */
-function wpmelb_display_meetups( $atts, $content=null ) {
+function wpaus_display_meetups( $atts, $content=null ) {
 	$returnStr = "";
 
 	extract( shortcode_atts( array(
 		'count' => 4,
 		'skip' => 0,
-		'name' => 'wp_melb_meetups',
+		'name' => 'wpaus_meetups',
 		'description' => false,
 		'venue' => true
 	), $atts ) );
 
-	if( strtolower( $description ) === 'show' ) {
+	if ( strtolower( $description ) === 'show' ) {
 		$description = true;
-	}
-	else {
+	} else {
 		$description = false;
 	}
-	if( strtolower( $venue ) === 'hide' ) {
+
+	if ( strtolower( $venue ) === 'hide' ) {
 		$venue = false;
-	}
-	else {
+	} elseif ( strtolower( $venue ) === 'with_address' ) {
+		$venue = 'with_address';
+	} else {
 		$venue = true;
 	}
-	$returnStr = wpmelb_get_meetup_events( $count, $skip, $description, $venue, 'wp_melb_meetups' );
+
+	$returnStr = wpaus_get_meetup_events( $count, $skip, $description, $venue, 'wpaus_meetups' );
 	if ( empty( $returnStr ) ) {
 		$returnStr = '<p class="nomeetups">There are no meetups currently scheduled.</p>';
 	}
 	return $returnStr;
 }
-add_shortcode( 'wpmelb_display_meetups', 'wpmelb_display_meetups' );
+add_shortcode( 'display_meetups', 'wpaus_display_meetups' );
 
 /**
  * Create a shortcode to display the next WP melbourne meetup
  *
- * Usage: [wpmelb_display_next_meetup description="show/hide" venue="show/hide"]
+ * Usage: [wpaus_display_next_meetup description="show/hide" venue="show/hide"]
  */
-function wpmelb_display_next_meetup( $atts, $content=null ) {
+function wpaus_display_next_meetup( $atts, $content=null ) {
 	$returnStr = "";
 
 	extract( shortcode_atts( array(
 		'description' => false,
-		'venue' => true
+		'venue' => 'show'
 	), $atts ) );
 
-	if( strtolower( $description ) === 'show' ) {
-		$description = true;
-	}
-	else {
-		$description = false;
-	}
-	if( strtolower( $venue ) === 'hide' ) {
+	$description = ( strtolower( $description ) === 'show' );
+
+	if ( strtolower( $venue ) === 'hide' ) {
 		$venue = false;
-	}
-	else {
+	} elseif ( strtolower( $venue ) === 'with_address' ) {
+		$venue = 'with_address';
+	} else {
 		$venue = true;
 	}
-	$returnStr = wpmelb_get_meetup_events( 1, 0, $description, $venue, 'next_wp_melb_meetup' );
+
+	$returnStr = wpaus_get_meetup_events( 1, 0, $description, $venue, 'next_wpaus_meetup' );
 	if ( empty( $returnStr ) ) {
 		$returnStr = '<h3 class="nomeetups">There are no meetups currently scheduled.</h3>';
 	}
 	return $returnStr;
 }
-add_shortcode( 'wpmelb_display_next_meetup', 'wpmelb_display_next_meetup' );
+add_shortcode( 'display_next_meetup', 'wpaus_display_next_meetup' );
 
+
+function wpaus_colourise_theme() {
+	$light = of_get_option( 'logo_color_bright', '#8cc63f' ) ?: '#8cc63f';
+	$dark  = of_get_option( 'logo_color_dark', '#70a025' ) ?: '#70a025';
+
+	// Minify the CSS a little
+	echo implode( '', array_map( 'trim', explode( "\n", "<style type='text/css' media='all'>
+		#headercontainer { border-top-color: $light; }
+
+		.has-text-color.has-white-color {
+			color: #fff;
+		}
+		.has-text-color.has-black-color {
+			color: #111;
+		}
+		.has-text-color.has-theme-light {
+			color: $light;
+		}
+		.has-text-color.has-theme-dark {
+			color: $dark;
+		}
+
+		.has-background.has-theme-dark-background-color {
+			background-color: $dark;
+		}
+		.has-background.has-theme-light-background-color {
+			background-color: $light;
+		}
+
+		a, a:focus, a:hover, a:visited, .share-buttons li a:hover {
+			color: $dark;
+		}
+		.main-navigation .current-menu-item > a, .main-navigation .current-menu-ancestor > a, .main-navigation a, .main-navigation .current_page_item > a, .main-navigation .current_page_ancestor > a, .main-navigation .current_page_parent > a,
+		.menu-toggle:hover, .btn:hover, input[type=\"submit\"]:hover, button:hover,
+		.site-footer a:hover, .site-footer a:focus, .smallprint a:hover,
+		li a:hover.prev, li a:hover.next {
+			color: $light;
+		}
+
+		ins, .btn.content-light
+		.main-navigation li:hover > a,
+		.page-links a:hover .page-numbers, li a:hover.page-numbers,
+		.side-nav-menu li a:hover,
+		.main-navigation li:hover > a {
+			background-color: $light;
+		}
+
+		.menu-toggle, .btn, input[type='submit'], button, .btn.content-light {
+			border-color: $dark;
+			background-color: $light;
+		}
+
+		.wpaus_meetup_wpaus_meetups li {
+			background-color: $light;
+		}
+	</style>" ) ) );
+
+}
+add_action( 'wp_head', 'wpaus_colourise_theme', 100 );

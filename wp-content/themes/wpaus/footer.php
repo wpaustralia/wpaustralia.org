@@ -1,13 +1,3 @@
-<?php
-/**
- * The template for displaying the footer.
- *
- * Contains the closing of the id #maincontentcontainer div and all content after.
- * There are also four footer widgets displayed. These will be displayed from
- * one to four columns, depending on how many widgets are active.
- */
-?>
-
 	<div id="footercontainer">
 
 		<footer class="site-footer row" role="contentinfo">
@@ -46,13 +36,13 @@
 	<div class="creditscontainer">
 		<div class="smallprint row">
 			<div class="col grid_6_of_12 sitecopyright">
-				<?php if ( of_get_option( 'footer_content', maddisondesigns_get_credits() ) ) {
-					echo apply_filters( 'meta_content', wp_kses_post( of_get_option( 'footer_content', maddisondesigns_get_credits() ) ) );
+				<?php if ( of_get_option( 'footer_content', wpaus_get_credits() ) ) {
+					echo apply_filters( 'the_content', wp_kses_post( of_get_option( 'footer_content', wpaus_get_credits() ) ) );
 				} ?>
 			</div> <!-- /.col.grid_6_of_12.sitecopyright -->
 			<div class="col grid_6_of_12 credits">
 				<div class="social-media-icons">
-					<?php echo maddisondesigns_get_social_media(); ?>
+					<?php echo wpaus_get_social_media(); ?>
 				</div>
 			</div> <!-- /.col.grid_6_of_12.credits -->
 		</div> <!-- /.smallprint.row -->
@@ -63,7 +53,7 @@
 <div class="sb-slidebar sb-right sb-style-push">
 	<!-- Your right Slidebar content. -->
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="sidebar-nav-logo" rel="home">
-		<?php require( 'wpmelb-logo.php' ); ?>
+		<?php $inverted = true; require( 'logo.php' ); ?>
 	</a>
 	<?php wp_nav_menu( array( 'theme_location' => 'primary', 'menu_id' => 'menu-mobile-nav', 'menu_class' => 'side-nav-menu' ) ); ?>
 </div>
