@@ -2,7 +2,7 @@
 
 
 if ( $_SERVER['REQUEST_URI'] == '/' && empty( $_GET ) && 'wpaustralia.org' === $_SERVER['HTTP_HOST'] ) {
-	include './index-static.html';
+	include './index-static/index.html';
 	die();
 }
 
