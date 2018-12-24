@@ -8,14 +8,6 @@ if ( ! defined( 'DB_PASSWORD' ) ) {
 	die( "Please create a `wp-config-private.php` file with all the regular secrets WordPress needs." );
 }
 
-// As we've got WordPress installed in a subdirectory, lets include our own wp-content directory at the root.
-define( 'WP_CONTENT_DIR', __DIR__ . '/wp-content' );
-defined( 'WP_CONTENT_URL' ) || define( 'WP_CONTENT_URL', 'https://' . $_SERVER['SERVER_NAME'] . '/wp-content' );
-
-// For Local Development you can define the `WP_CONTENT_URL` in `wp-config-private.php` such as:
-// define( 'WP_CONTENT_URL', 'http://localhost/wpaustralia.org/wp-content' );
-
-
 define( 'MULTISITE', true );
 define( 'SUBDOMAIN_INSTALL', true );
 define( 'DOMAIN_CURRENT_SITE', 'wpaustralia.org' );
@@ -28,7 +20,7 @@ define( 'SUNRISE', true );
 
 /** Absolute path to the WordPress directory. */
 if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/wordpress/' );
+	define( 'ABSPATH', __DIR__ . '/' );
 }
 
 /** Sets up WordPress vars and included files. */

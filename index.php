@@ -7,4 +7,4 @@ if ( $_SERVER['REQUEST_URI'] == '/' && empty( $_GET ) && 'wpaustralia.org' === $
 }
 
 define('WP_USE_THEMES', true);
-require( __DIR__ . '/wordpress/wp-blog-header.php' );
+require( __DIR__ . '/wp-blog-header.php' );
