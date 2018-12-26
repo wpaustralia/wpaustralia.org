@@ -513,7 +513,7 @@ function wpaus_get_relative_date() {
  * @return void
  */
 function wpaus_content_width() {
-	if ( is_page_template( 'page-templates/full-width.php' ) || is_attachment() ) {
+	if ( is_page_template( 'full-width.php' ) || is_attachment() ) {
 		global $content_width;
 		$content_width = 1200;
 	}
