@@ -296,8 +296,7 @@ function wpaus_scripts_styles() {
 	}
 
 	// Enqueue the default WordPress stylesheet
-	wp_enqueue_style( 'style', get_stylesheet_uri() );
-
+	wp_enqueue_style( 'style', get_stylesheet_uri(), array(), filemtime( __DIR__ . '/style.css' ) );
 
 	/**
 	 * Register and enqueue our scripts
