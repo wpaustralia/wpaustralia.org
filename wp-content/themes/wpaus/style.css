@@ -994,7 +994,7 @@ article.sticky {
 .entry-content table,
 .comment-content table {
 	border-bottom: 1px solid #ccc;
-	font-size: 0.875rem;
+	font-size: 1.25rem;
 	line-height: 2;
 	margin: 0 0 1.5rem;
 	width: 100%;
