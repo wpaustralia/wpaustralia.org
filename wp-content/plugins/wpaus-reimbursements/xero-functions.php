@@ -1,6 +1,9 @@
 <?php
 namespace WPAustralia\Reimbursements\Xero;
 
+/**
+ * Generate a Xero oAuth login url.
+ */
 function get_oauth_link( $back_to = '' ) {
 	if ( ! $back_to ) {
 		$back_to = $_SERVER['REQUEST_URI'];
@@ -23,6 +26,9 @@ function get_oauth_link( $back_to = '' ) {
 	return $url;
 }
 
+/**
+ * Retrieve the stored Xero tokens.
+ */
 function get_token() {
 	$token = get_user_meta( get_current_user_id(), '_wpaus_xero', true );
 	if ( $token && $token['expiration'] > time() ) {
@@ -59,11 +65,18 @@ function refresh_token( $token ) {
 }
 
 
-// Xero API as a specific Tenant ID.
+/**
+ * Make a Xero API call with a specific Tenant ID specified.
+ */
 function xero_api_t( $tenant, $endpoint, $payload = false, $headers = [], $method = null ) {
 	return xero_api( $endpoint, $payload, $headers, $method, $tenant );
 }
 
+/**
+ * A super simple Xero API endpoint wrapper.
+ *
+ * If `$tenant` isn't specified, it uses the first known tenant by `get_token()`, assuming it's connected to a single Xero install.
+ */
 function xero_api( $endpoint, $payload = false, $headers = [], $method = null, $tenant = false ) {
 
 	if ( is_null( $method ) ) {
