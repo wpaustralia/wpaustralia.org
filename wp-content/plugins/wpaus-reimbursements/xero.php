@@ -22,15 +22,21 @@ function meta_box( $post ) {
 
 	$invoices = get_post_meta( $post->id, '_xero_invoice', true );
 
-	if ( $token ) {
+	if ( !empty( $token['organisations'] ) ) {
 		foreach ( $token['organisations'] as $org ) {
 			echo '<h3>' . esc_html( $org['name'] ) . '</h3>';
 
 			if ( isset( $invoices[ $org['id'] ] ) ) {
+				$xero = xero_api_t( $org['id'], 'Invoices/' . $invoices[ $org['id'] ]['id'] );
+				$inv  = $xero->Invoices[0] ?? false;
+
+				$display_id = $inv->InvoiceNumber ?: $inv->InvoiceID ?: $invoices[ $org['id'] ]['id'];
+				$state = ucwords( strtolower( $inv->Status ?? 'Draft' ) );
 				printf(
-					'<p><strong>Xero Invoice:</strong> <a href="%s">%s</a></p>',
-					'https://go.xero.com/AccountsPayable/Edit.aspx?InvoiceID=' . $invoices[ $org['id'] ],
-					$invoices[ $org['id'] ]
+					'<p><strong>Xero Invoice:</strong> %s <a href="%s">%s</a></p>',
+					$state,
+					'https://go.xero.com/AccountsPayable/Edit.aspx?InvoiceID=' . $invoices[ $org['id'] ]['id'],
+					$display_id
 				);
 			} else {
 				// Import it?
@@ -275,27 +281,7 @@ function oAuth_callback() {
 		update_user_meta( get_current_user_id(), '_wpaus_xero', $token );
 	}
 
-	if ( ! empty( $token['access_token'] ) ) {
-		$json = xero_api( 'connections' );
-		if ( $json ) {
-			foreach ( $json as $connection ) {
-				$org_json = xero_api( 'organisation' );
-				if ( $org_json ) {
-					// Name, LegalName, OrganisationID (Tenant ID from above)
-					$token['organisations'] ??= [];
-					foreach ( $org_json->Organisations as $o ) {
-						$token['organisations'][ $o->OrganisationID ] = array(
-							'id'    => $o->OrganisationID,
-							'name'  => $o->Name,
-							'legal' => $o->LegalName,
-						);
-					}
-				}
-			}
-
-			update_user_meta( get_current_user_id(), '_wpaus_xero', $token );
-		}
-	}
+	fill_token_organisation_data();
 
 	if ( !empty( $state_data->back_to ) ) {
 		wp_safe_redirect( $state_data->back_to );

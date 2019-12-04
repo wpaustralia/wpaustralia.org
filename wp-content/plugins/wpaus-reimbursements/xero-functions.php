@@ -31,15 +31,57 @@ function get_oauth_link( $back_to = '' ) {
  */
 function get_token() {
 	$token = get_user_meta( get_current_user_id(), '_wpaus_xero', true );
-	if ( $token && $token['expiration'] > time() ) {
+
+	// If the Organisation field is empty, fill it.
+	if ( empty( $token['organisations'] ) ) {
+		$token = fill_token_organisation_data( $token );
+	}
+
+	// If the token is valid for the next 5 minutes, use it.
+	if ( $token && $token['expiration'] > time() + 5 * MINUTE_IN_SECONDS ) {
 		return $token;
 	}
 
+	// If the token is expired, refresh it.
 	if ( $token && $token['refresh_token'] ) {
 		return refresh_token( $token );
 	}
 
 	return false;
+}
+
+/**
+ * Fill in the Organisation keys
+ */
+function fill_token_organisation_data( $token ) {
+	if ( empty( $token['access_token'] ) ) {
+		return $token;
+	}
+
+	$json = xero_api( 'connections' );
+	if ( $json ) {
+		foreach ( $json as $connection ) {
+			$org_json = xero_api_t( $connection->tenantId, 'organisation' );
+			if ( $org_json ) {
+				// Name, LegalName, OrganisationID (Tenant ID from above)
+				$token['organisations'] ??= [];
+				foreach ( $org_json->Organisations as $o ) {
+					$token['organisations'][ $o->OrganisationID ] = array(
+						'id'    => $o->OrganisationID,
+						'name'  => $o->Name,
+						'legal' => $o->LegalName,
+					);
+				}
+			}
+		}
+
+		if ( $token['organisations'] ) {
+			update_user_meta( get_current_user_id(), '_wpaus_xero', $token );
+		}
+	}
+
+	// If it succeeded, return the token.
+	return $token['organisations'] ? $token : false;
 }
 
 /**
@@ -135,7 +177,7 @@ function xero_api( $endpoint, $payload = false, $headers = [], $method = null, $
 		return $json;
 	}
 
-	//var_dump( $args, $resp );
+	WP_DEBUG && var_dump( $args, $resp );
 	wp_die( wp_remote_retrieve_body( $resp ) );
 
 	return false;
