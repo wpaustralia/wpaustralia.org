@@ -117,8 +117,12 @@ function create_bill() {
 		wp_die( "Something is MIA." );
 	}
 
-	// First word of the meetup group.
-	$meetup = preg_replace( '!^(\S+).*$!', '$1', $message->fields['meetup'] );
+	// First word of the meetup group.. kinda.. :)
+	// 'Port Macquarie' and 'Gold Coast' should be full minus the space, this hacky min-5char + extra non-space chars.
+	$meetup = str_replace( ' ', '',
+		preg_replace( '!^(.{5}\S*).*$!', '$1', $message->fields['meetup'] )
+	);
+	// Xero is prefixed with WP-, prefix if it's not already done.
 	if ( 'WP-' != substr( $meetup, 0, 3 ) ) {
 		$meetup = "WP-{$meetup}";
 	}
